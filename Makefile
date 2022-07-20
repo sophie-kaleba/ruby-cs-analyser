@@ -40,7 +40,7 @@ build_tr:
 		$(info [BUILDING TruffleRuby ...])
 		
 		export GIT_DIR=$(PROJECT_FOLDER)/${SRC_TR}/.git ; git checkout $(TR_BRANCH)	
-		export VARIANT=jvm-ce ; cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(SYSTEM_RUBY) ${JT} build --sforceimports --env ${VARIANT}
+		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(SYSTEM_RUBY) ${JT} build --sforceimports --env jvm-ce
      
 run_and_log:
 		$(info [RUNNING ${benchmark_name} ...])
