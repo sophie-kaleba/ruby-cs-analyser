@@ -1,22 +1,22 @@
-PROJECT_FOLDER = $(PWD)
-SRC_TR = truffleruby
-SRC_MX = mx
-SRC_GRAAL = graal
-SRC_ANALYZER = behaviour-analysis
-SRC_RESULTS = results
+PROJECT_FOLDER := $(PWD)
+SRC_TR := truffleruby
+SRC_MX := mx
+SRC_GRAAL := graal
+SRC_ANALYZER := behaviour-analysis
+SRC_RESULTS := results
 
 #JT = $(SRC_TR)/bin/jt
-JT = $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
-TR_BRANCH = "update-truby"
-ANALYZER_BRANCH = "switch-to-data-table"
-EXE_FLAGS = --splitting
+JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
+TR_BRANCH := "update-truby"
+ANALYZER_BRANCH := "switch-to-data-table"
+EXE_FLAGS := --splitting
 
-CURRENT_FOLDER = ""
-LATEST_FOLDER = $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
-REPORT_FOLDER = $(LATEST_FOLDER)/report
-SYSTEM_RUBY = /home/sopi/.rbenv/versions/3.0.0/bin/ruby
-RAW_INPUT = raw_${benchmark_name}.log
-PARSED_INPUT = parsed_${benchmark_name}.log
+CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")
+LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
+REPORT_FOLDER := $(LATEST_FOLDER)/report
+SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
+RAW_INPUT := raw_${benchmark_name}.log
+PARSED_INPUT := parsed_${benchmark_name}.log
 
 fetch_deps:
 		$(info [FETCHING graal anx mx...])
@@ -45,15 +45,12 @@ build_tr:
 run_and_log:
 		$(info [RUNNING ${benchmark_name} ...])
 
-		cd $(PROJECT_FOLDER)/${SRC_TR}
-		git fetch --all || true
-		git checkout $(ANALYZER_BRANCH)	
+		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
+		
+		mkdir -p $(CURRENT_FOLDER)
+		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 
-		CURRENT_FOLDER=$(date "+%d-%m-%y_%H-%M-%S")
-		mkdir $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(CURRENT_FOLDER)
-		ln -l $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(CURRENT_FOLDER) $(LATEST_FOLDER)
-
-		$(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(LATEST_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS)  $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
+		$(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
 
 parse_trace:
 		$(info [PARSING execution trace ...])
