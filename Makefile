@@ -37,10 +37,12 @@ fetch_deps:
 		git -C $(PROJECT_FOLDER)/$(SRC_ANALYZER) fetch --all || true
 
 build_tr: 
-		$(info [BUILDING TruffleRuby ...])
+		$(info [BUILDING TruffleRuby and Java splitting analyser ...])
 		
 		export GIT_DIR=$(PROJECT_FOLDER)/${SRC_TR}/.git ; git checkout $(TR_BRANCH)	
 		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(SYSTEM_RUBY) ${JT} build --sforceimports --env jvm-ce
+
+		cd $(PROJECT_FOLDER)/$(SRC_ANALYZER)/splitting-transition/src ; javac *.java
      
 run_and_log:
 		$(info [RUNNING ${benchmark_name} ...])
@@ -65,10 +67,9 @@ parse_trace:
 analyse_trace:
 		$(info [ANALYSING execution trace, summary tables saved in $(LATEST_FOLDER)...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER}
-#arg1: execution trace to analyse arg2:output folder for the csv files
-		Rscript analyse_and_generate_csv.Rnw $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER)  
-
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT)
+#		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
+		  
 report:
 		$(info [GENERATING analysis report at ...])
 
