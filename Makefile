@@ -9,9 +9,11 @@ SRC_RESULTS := results
 JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
-EXE_FLAGS := --splitting
+
+EXE_FLAGS := --splitting --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
 
 CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")
+COV_FOLDER := $(CURRENT_FOLDER)/Coverage
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 REPORT_FOLDER := $(LATEST_FOLDER)/report
 SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
@@ -50,9 +52,10 @@ run_and_log:
 		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
 		
 		mkdir -p $(CURRENT_FOLDER)
+		mkdir -p $(COV_FOLDER)
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 
-		$(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
+		$(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
 
 parse_trace:
 		$(info [PARSING execution trace ...])
@@ -73,10 +76,10 @@ analyse_trace:
 report:
 		$(info [GENERATING analysis report at ...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER}
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw gen-eval.tex $(LATEST_FOLDER) $(REPORT_FOLDER)
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
-		Rscript knit.R generate_report.Rnw gen-eval.tex $(LATEST_FOLDER) $(REPORT_FOLDER)
+		
 		cp paper.tex $(LATEST_FOLDER)/$(PARSED_INPUT).tex
 
 reorganize:
