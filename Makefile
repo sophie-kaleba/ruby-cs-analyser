@@ -55,15 +55,12 @@ run_and_log:
 parse_trace:
 		$(info [PARSING execution trace ...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER}
-		git fetch --all || true
-		git checkout $(ANALYZER_BRANCH)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH)
 
-		cd $(LATEST_FOLDER)
-		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_execution_trace.py $(RAW_INPUT) $(PARSED_INPUT)
+		cd $(LATEST_FOLDER) ; python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_execution_trace.py $(RAW_INPUT) $(PARSED_INPUT)
 
 		$(info [COMPRESS execution trace ...])
-		tar --remove-files -I lz4 -cf $(RAW_INPUT).tar.lz4 $(RAW_INPUT)
+		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(RAW_INPUT).tar.lz4 $(RAW_INPUT)
 
 analyse_trace:
 		$(info [ANALYSING execution trace, summary tables saved in $(LATEST_FOLDER)...])
