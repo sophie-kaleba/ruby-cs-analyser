@@ -57,6 +57,16 @@ run_and_log:
 
 		$(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
 
+parse_coverage:
+		$(info [REPORT COVERAGE...])
+
+		lcov --summary $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
+		lcov --list $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
+
+		mkdir -p $(COV_FOLDER)/Global
+		mkdir -p $(COV_FOLDER)/Detailed
+		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_cov_file.py $(COV_FOLDER)/${benchmark_name}_cov.txt $(COV_FOLDER)/Global/${benchmark_name}_global.csv $(COV_FOLDER)/Detailed/${benchmark_name}_detailed.csv
+
 parse_trace:
 		$(info [PARSING execution trace ...])
 
