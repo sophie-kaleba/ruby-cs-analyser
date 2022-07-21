@@ -16,6 +16,7 @@ EXE_FLAGS := --splitting --coverage --coverage.Output=lcov --coverage.OutputFile
 CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name}
 COV_FOLDER := $(CURRENT_FOLDER)/Coverage
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
+LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
 REPORT_FOLDER := $(LATEST_FOLDER)/report
 SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
@@ -74,7 +75,7 @@ parse_coverage:
 parse_trace:
 		$(info [PARSING execution trace ...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH) ; git pull
 
 		cd $(LATEST_FOLDER) ; python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_execution_trace.py $(RAW_INPUT) $(PARSED_INPUT)
 
@@ -89,9 +90,10 @@ analyse_trace:
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 		  
 report:
-		$(info [GENERATING analysis report at ...])
+		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw gen-eval.tex $(LATEST_FOLDER) $(REPORT_FOLDER)
+		mkdir -p $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw tables.tex $(LATEST_FOLDER)/General $(LATEST_COV_FOLDER)/Global $(REPORT_FOLDER)
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
