@@ -12,7 +12,7 @@ ANALYZER_BRANCH := "switch-to-data-table"
 
 EXE_FLAGS := --splitting --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
 
-CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")
+CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name}
 COV_FOLDER := $(CURRENT_FOLDER)/Coverage
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 REPORT_FOLDER := $(LATEST_FOLDER)/report
@@ -82,6 +82,7 @@ analyse_trace:
 
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT)
 #		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
+		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 		  
 report:
 		$(info [GENERATING analysis report at ...])
@@ -89,6 +90,7 @@ report:
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw gen-eval.tex $(LATEST_FOLDER) $(REPORT_FOLDER)
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
+#it also generates all the tex tables
 		
 		cp paper.tex $(LATEST_FOLDER)/$(PARSED_INPUT).tex
 
