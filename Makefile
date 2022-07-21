@@ -24,24 +24,20 @@ PARSED_INPUT := parsed_${benchmark_name}.log
 
 do_run_analyse: run_and_log parse_coverage parse_trace analyse_trace
 init: fetch_deps build_tr
+all: fetch_deps build_tr run_and_log parse_coverage parse_trace analyse_trace report
 
 fetch_deps:
 		$(info [FETCHING graal anx mx...])
-		cd $(PROJECT_FOLDER)/$(SRC_GRAAL) || git clone https://github.com/oracle/graal.git
-		cd $(PROJECT_FOLDER)/$(SRC_MX) || git clone https://github.com/graalvm/mx.git
+		git submodule update --init
 
-		export GIT_DIR=$(PROJECT_FOLDER)/$(SRC_GRAAL)/.git ; git config remote.custom-graal.url >&- || git remote add custom-graal https://github.com/sophie-kaleba/truffle.git
-		cd $(PROJECT_FOLDER)/${SRC_GRAAL} ; git -C $(PROJECT_FOLDER)/$(SRC_GRAAL) fetch --all || true ; git checkout $(GRAAL_BRANCH) ; git pull
-		git -C $(PROJECT_FOLDER)/$(SRC_MX) pull || true
+		cd $(PROJECT_FOLDER)/${SRC_GRAAL} ; git -C $(PROJECT_FOLDER)/$(SRC_GRAAL) fetch --all || true ; git checkout $(GRAAL_BRANCH)
+		git -C $(PROJECT_FOLDER)/$(SRC_MX) fetch || true
 
 		$(info [FETCHING truffleruby ...])
-		cd $(PROJECT_FOLDER)/$(SRC_TR) || git clone https://github.com/oracle/truffleruby.git
-		export GIT_DIR=$(PROJECT_FOLDER)/$(SRC_TR)/.git ; git config remote.custom-tr.url >&- || git remote add custom-tr https://github.com/sophie-kaleba/truffleruby.git
-		git -C $(PROJECT_FOLDER)/$(SRC_TR) fetch --all || true
+		cd $(PROJECT_FOLDER)/${SRC_TR} ; git -C $(PROJECT_FOLDER)/$(SRC_TR) fetch --all || true ; git checkout $(TR_BRANCH)
 
 		$(info [FETCHING Ruby analyser ...])
-		cd $(PROJECT_FOLDER)/$(SRC_ANALYZER) || git clone https://github.com/sophie-kaleba/behaviour-analysis.git
-		git -C $(PROJECT_FOLDER)/$(SRC_ANALYZER) fetch --all || true
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git -C $(PROJECT_FOLDER)/$(SRC_ANALYZER) fetch --all || true ; git checkout $(ANALYZER_BRANCH)
 
 build_tr: 
 		$(info [BUILDING TruffleRuby and Java splitting analyser ...])
@@ -67,6 +63,8 @@ parse_coverage:
 
 		lcov --summary $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
 		lcov --list $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
+
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH) ; git pull
 
 		mkdir -p $(COV_FOLDER)/Global
 		mkdir -p $(COV_FOLDER)/Detailed
@@ -98,7 +96,7 @@ report:
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
 		
-		cp paper.tex $(LATEST_FOLDER)/$(PARSED_INPUT).tex
+#		cp paper.tex $(LATEST_FOLDER)/$(PARSED_INPUT).tex TODO
 
 reorganize:
 #	mkdir ./${FOLDER}/${benchmark_name}

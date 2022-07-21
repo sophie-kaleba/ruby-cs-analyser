@@ -1,0 +1,12 @@
+[submodule "graal"]
+	path = graal
+	url = https://github.com/sophie-kaleba/truffle.git
+[submodule "mx"]
+	path = mx
+	url = https://github.com/graalvm/mx.git
+[submodule "truffleruby"]
+	path = truffleruby
+	url = https://github.com/sophie-kaleba/truffleruby.git
+[submodule "behaviour-analysis"]
+	path = behaviour-analysis
+	url = https://github.com/sophie-kaleba/behaviour-analysis.git
