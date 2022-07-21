@@ -7,6 +7,7 @@ SRC_RESULTS := results
 
 #JT = $(SRC_TR)/bin/jt
 JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
+GRAAL_BRANCH := "dls/fetchID"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
@@ -20,13 +21,16 @@ SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
+do_run_analyse: run_and_log parse_coverage parse_trace analyse_trace
+init: fetch_deps build_tr
+
 fetch_deps:
 		$(info [FETCHING graal anx mx...])
 		cd $(PROJECT_FOLDER)/$(SRC_GRAAL) || git clone https://github.com/oracle/graal.git
 		cd $(PROJECT_FOLDER)/$(SRC_MX) || git clone https://github.com/graalvm/mx.git
 
 		export GIT_DIR=$(PROJECT_FOLDER)/$(SRC_GRAAL)/.git ; git config remote.custom-graal.url >&- || git remote add custom-graal https://github.com/sophie-kaleba/truffle.git
-		git -C $(PROJECT_FOLDER)/$(SRC_GRAAL) fetch --all || true
+		cd $(PROJECT_FOLDER)/${SRC_GRAAL} ; git -C $(PROJECT_FOLDER)/$(SRC_GRAAL) fetch --all || true ; git checkout $(GRAAL_BRANCH) ; git pull
 		git -C $(PROJECT_FOLDER)/$(SRC_MX) pull || true
 
 		$(info [FETCHING truffleruby ...])
