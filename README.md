@@ -12,12 +12,12 @@ Holds the execution traces and the analysis results
 # How to use
 The Makefile contains all necessary targets to run ruby programs and analyse execution traces
 
-    make init run analyze
+    make all benchmark_name="---" iterations="---" inner_iterations="---"
 
 should do the trick
 
 # TODO
-- [ ] Stop cloning the repos and install them as submodules, update the targets accordingly
+- [ ] Generate the latex report
 - [ ] Generate the execution plots and store them in the benchmark folder
 - [ ] Make it possible to run a list of programs, analyse all the traces and aggregate all the results 
 - [ ] Generate a target lifetime plot (y-axis is target ID), color coded depending on the receiver set
