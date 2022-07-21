@@ -17,7 +17,7 @@ The Makefile contains all necessary targets to run ruby programs and analyse exe
 should do the trick
 
 # TODO
-[ ] Stop cloning the repos and install them as submodules, update the targets accordingly
-[ ] Generate the execution plots and store them in the benchmark folder
-[ ] Make it possible to run a list of programs, analyse all the traces and aggregate all the results 
-[ ] Generate a target lifetime plot (y-axis is target ID), color coded depending on the receiver set
+- [ ] Stop cloning the repos and install them as submodules, update the targets accordingly
+- [ ] Generate the execution plots and store them in the benchmark folder
+- [ ] Make it possible to run a list of programs, analyse all the traces and aggregate all the results 
+- [ ] Generate a target lifetime plot (y-axis is target ID), color coded depending on the receiver set
