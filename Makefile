@@ -95,8 +95,12 @@ report:
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
-		
-#		cp paper.tex $(LATEST_FOLDER)/$(PARSED_INPUT).tex TODO
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/tables.tex $(REPORT_FOLDER)/tables.tex
+		cp acmart.cls $(REPORT_FOLDER)/acmart.cls 
+		cp paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
+
+		pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
+		pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
 reorganize:
 #	mkdir ./${FOLDER}/${benchmark_name}
@@ -115,6 +119,3 @@ clean:
 		rm *.out
 		rm *.log
 
-pdf:
-	pdflatex $(PARSED_INPUT).tex
-	pdflatex $(PARSED_INPUT).tex
