@@ -96,11 +96,10 @@ report:
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
 		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/tables.tex $(REPORT_FOLDER)/tables.tex
-		cp acmart.cls $(REPORT_FOLDER)/acmart.cls 
-		cp paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
-		pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
-		pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
+		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
 reorganize:
 #	mkdir ./${FOLDER}/${benchmark_name}
@@ -115,7 +114,5 @@ reorganize:
 #	mv out_${benchmark_name}_splitting_data.csv latest/out_${benchmark_name}_splitting_data.csv
 
 clean:
-		rm *.aux
-		rm *.out
-		rm *.log
+		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log
 
