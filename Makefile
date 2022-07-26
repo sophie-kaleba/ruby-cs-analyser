@@ -18,6 +18,7 @@ COV_FOLDER := $(CURRENT_FOLDER)/Coverage
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
 REPORT_FOLDER := $(LATEST_FOLDER)/report
+PLOTS_FOLDER := $(LATEST_FOLDER)/plots
 SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
@@ -99,7 +100,15 @@ report:
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
-		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
+		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
+
+plots:
+		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
+
+		mkdir -p $(PLOTS_FOLDER)
+		cd $(LATEST_FOLDER) ; tar -I lz4 -xf $(PARSED_INPUT).tar.lz4
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT)
+		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
 reorganize:
 #	mkdir ./${FOLDER}/${benchmark_name}
