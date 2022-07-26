@@ -52,9 +52,10 @@ pdf:
 
 # TODO
 - [ ] Make sure the input for the java splitting analyzer is written in the currnent benchmark folder
-- [ ] R performance: str_trim when python parsing rather than in the R script
+- [ ] Get rid of the dependency to the harness: make it log from the start, with the possibility to: - identify if startup - disable logging during startup
+- [x] R performance: str_trim when python parsing rather than in the R script
 - [x] Analysis takes time, and most of it is spent on the java part of the process. Improve the java splitting analyser.
-- [ ] Generate the execution plots and store them in the benchmark folder
+- [x] Generate the execution plots and store them in the benchmark folder
 - [ ] Clean the behaviour-analysis repository
 - [ ] Make it possible to run a list of programs, analyse all the traces and aggregate all the results
 - [ ] Generate a target lifetime plot (y-axis is target ID), color coded depending on the receiver set
