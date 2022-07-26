@@ -23,9 +23,9 @@ SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
-do_run_analyse: run_and_log parse_coverage parse_trace analyse_trace
+do_run_analyse: run_and_log parse_coverage parse_trace analyse_trace report plots clean
 init: fetch_deps build_tr
-all: fetch_deps build_tr run_and_log parse_coverage parse_trace analyse_trace report
+all: fetch_deps build_tr run_and_log parse_coverage parse_trace analyse_trace report plots clean
 
 fetch_deps:
 		$(info [FETCHING graal anx mx...])
