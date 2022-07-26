@@ -51,6 +51,7 @@ pdf:
 
 
 # TODO
+- [ ] Make sure the input for the java splitting analyzer is written in the currnent benchmark folder
 - [ ] R performance: str_trim when python parsing rather than in the R script
 - [x] Analysis takes time, and most of it is spent on the java part of the process. Improve the java splitting analyser.
 - [ ] Generate the execution plots and store them in the benchmark folder
