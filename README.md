@@ -54,7 +54,8 @@ pdf:
 - [ ] list packages dependency / run on a fresh VM
 - [x] Make sure the input for the java splitting analyzer is written in the currnent benchmark folder
 - [x] Get rid of the dependency to the harness: make it log from the start...
-- [ ] ...with the possibility to: - identify if startup - disable logging during startup
+- [x] ...with the possibility to: - identify if startup - disable logging during startup
+- [ ] Generate report for blocks
 - [ ] R performance: str_trim when python parsing rather than in the R script
 - [x] Analysis takes time, and most of it is spent on the java part of the process. Improve the java splitting analyser.
 - [x] Generate the execution plots and store them in the benchmark folder
