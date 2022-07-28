@@ -94,7 +94,7 @@ report:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
 
 		mkdir -p $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw tables.tex $(LATEST_FOLDER)/General $(LATEST_COV_FOLDER)/Global $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw tables.tex $(LATEST_FOLDER)/General $(LATEST_COV_FOLDER)/Global $(REPORT_FOLDER) $(LATEST_FOLDER)/Details
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
@@ -102,7 +102,7 @@ report:
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
-		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
+		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; bibtex *.aux ; bibtex *.aux ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
 
 plots:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
@@ -125,5 +125,5 @@ reorganize:
 #	mv out_${benchmark_name}_splitting_data.csv latest/out_${benchmark_name}_splitting_data.csv
 
 clean:
-		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log
+		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
 
