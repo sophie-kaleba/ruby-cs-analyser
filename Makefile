@@ -11,7 +11,7 @@ GRAAL_BRANCH := "dls/fetchID"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
-EXE_FLAGS := --splitting --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
+EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
 
 CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name}
 COV_FOLDER := $(CURRENT_FOLDER)/Coverage
@@ -59,7 +59,7 @@ run_and_log:
 		mkdir -p $(COV_FOLDER)
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 
-		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour.rb ${benchmark_name} ${iterations} ${inner_iterations} 
+		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations} 
 
 parse_coverage:
 		$(info [REPORT COVERAGE...])
