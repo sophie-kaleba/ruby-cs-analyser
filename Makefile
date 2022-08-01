@@ -103,11 +103,11 @@ report:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
 
 		mkdir -p $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/General $(LATEST_FOLDER)/Methods/Details $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw withstartup_method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/WithStartup/General $(LATEST_FOLDER)/Methods/WithStartup/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw withstartup_method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/General $(LATEST_FOLDER)/Methods/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/NoStartup/General $(LATEST_FOLDER)/Methods/NoStartup/Details $(REPORT_FOLDER)
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw withstartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/WithStartup/General $(LATEST_FOLDER)/Blocks/WithStartup/Details $(REPORT_FOLDER)  
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw withstartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/NoStartup/General $(LATEST_FOLDER)/Blocks/NoStartup/Details $(REPORT_FOLDER)  
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
@@ -117,7 +117,7 @@ report:
 		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_block_tables.tex $(REPORT_FOLDER)/withstartup_block_tables.tex
 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
-		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex
 
 		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; bibtex *.aux ; bibtex *.aux ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
 
