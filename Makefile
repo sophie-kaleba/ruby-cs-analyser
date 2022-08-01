@@ -23,6 +23,12 @@ SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
+METHODS := "TRUE"
+BLOCKS := "FALSE"
+
+NO_STARTUP := "TRUE"
+STARTUP := "FALSE"
+
 do_run: run_and_log parse_coverage parse_trace 
 do_analyse: analyse_trace 
 do_report: report plots clean
@@ -86,7 +92,10 @@ parse_trace:
 analyse_trace:
 		$(info [ANALYSING execution trace, summary tables saved in $(LATEST_FOLDER)...])
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${STARTUP} $(METHODS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(METHODS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(BLOCKS)
 #		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 		  
@@ -94,11 +103,19 @@ report:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
 
 		mkdir -p $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw tables.tex $(LATEST_FOLDER)/General $(LATEST_COV_FOLDER)/Global $(REPORT_FOLDER) $(LATEST_FOLDER)/Details
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/General $(LATEST_FOLDER)/Methods/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw nostartup_method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/NoStartup/General $(LATEST_FOLDER)/Methods/NoStartup/Details $(REPORT_FOLDER)
+
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw nostartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/NoStartup/General $(LATEST_FOLDER)/Blocks/NoStartup/Details $(REPORT_FOLDER)  
 #arg1: csv files location arg2: report location
 #will generate the report in place, it will need to be moved in the relevant folder
 #it also generates all the tex tables
-		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/tables.tex $(REPORT_FOLDER)/tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/method_tables.tex $(REPORT_FOLDER)/method_tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/nostartup_method_tables.tex $(REPORT_FOLDER)/nostartup_method_tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/block_tables.tex $(REPORT_FOLDER)/block_tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/nostartup_block_tables.tex $(REPORT_FOLDER)/nostartup_block_tables.tex
+
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex	
 
