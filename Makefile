@@ -52,7 +52,7 @@ build_tr:
 		$(info [BUILDING TruffleRuby and Java splitting analyser ...])
 		
 		export GIT_DIR=$(PROJECT_FOLDER)/${SRC_TR}/.git ; git checkout $(TR_BRANCH)	
-		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(SYSTEM_RUBY) ${JT} build --sforceimports --env jvm-ce
+		cd $(PROJECT_FOLDER)/$(SRC_TR) ; ${JT} build --sforceimports --env jvm-ce
 
 		cd $(PROJECT_FOLDER)/$(SRC_ANALYZER)/splitting-transition/src ; javac *.java
      
