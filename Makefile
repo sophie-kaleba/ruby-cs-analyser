@@ -129,7 +129,7 @@ plots:
 		cd $(LATEST_FOLDER) ; tar -I lz4 -xf $(PARSED_INPUT).tar.lz4
 
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(METHODS)
-#		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER)/Blocks $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
 
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
