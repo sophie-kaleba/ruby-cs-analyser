@@ -13,6 +13,11 @@ Also output summary tables usable in tex files
 - **results**
 Holds the execution traces and the analysis results  
 
+# Package dependencies
+WIP
+git java R Rscript python3 lz4 tar 
+
+
 # How to use
 The Makefile contains all the necessary targets to run ruby programs and analyse execution traces
 
@@ -52,8 +57,8 @@ Coverage data is stored in ./results/[date]/[app_name]/Coverage
 
 
 # TODO
-- [X] Analyse startup data
-- [ ] Generate report for blocks
+- [x] Analyse startup data
+- [x] Generate report for blocks
 - [ ] list packages dependency / run on a fresh VM
 - [ ] Make it possible to run a list of programs, analyse all the traces and aggregate all the results
 - [x] Make sure the input for the java splitting analyzer is written in the currnent benchmark folder
