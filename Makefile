@@ -11,7 +11,7 @@ GRAAL_BRANCH := "dls/fetchID"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
-EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
+EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
 
 CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name}
 COV_FOLDER := $(CURRENT_FOLDER)/Coverage
@@ -94,8 +94,9 @@ analyse_trace:
 
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(METHODS)
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(METHODS)
-#		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(BLOCKS)
-#		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(BLOCKS)
+
 #		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 		  
@@ -106,15 +107,15 @@ report:
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw withstartup_method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/General $(LATEST_FOLDER)/Methods/Details $(REPORT_FOLDER) ${KEEP_STARTUP} $(METHODS)
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/NoStartup/General $(LATEST_FOLDER)/Methods/NoStartup/Details $(REPORT_FOLDER) ${NO_STARTUP} $(METHODS)
 
-#		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw withstartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
-#		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/NoStartup/General $(LATEST_FOLDER)/Blocks/NoStartup/Details $(REPORT_FOLDER)  
-#arg1: csv files location arg2: report location
-#will generate the report in place, it will need to be moved in the relevant folder
-#it also generates all the tex tables
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw withstartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/NoStartup/General $(LATEST_FOLDER)/Blocks/NoStartup/Details $(REPORT_FOLDER)  
+#		arg1: csv files location arg2: report location
+#		will generate the report in place, it will need to be moved in the relevant folder, and also generates the tex tables
+
 		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/method_tables.tex $(REPORT_FOLDER)/method_tables.tex
 		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_method_tables.tex $(REPORT_FOLDER)/withstartup_method_tables.tex
-#		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/block_tables.tex $(REPORT_FOLDER)/block_tables.tex
-#		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_block_tables.tex $(REPORT_FOLDER)/withstartup_block_tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/block_tables.tex $(REPORT_FOLDER)/block_tables.tex
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_block_tables.tex $(REPORT_FOLDER)/withstartup_block_tables.tex
 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex
@@ -126,8 +127,10 @@ plots:
 
 		mkdir -p $(PLOTS_FOLDER)
 		cd $(LATEST_FOLDER) ; tar -I lz4 -xf $(PARSED_INPUT).tar.lz4
+
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(METHODS)
 #		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER) $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
+
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
 clean:
