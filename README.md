@@ -21,7 +21,7 @@ git java R Rscript python3 lz4 tar
 # How to use
 The Makefile contains all the necessary targets to run ruby programs and analyse execution traces
 
-    make all benchmark_name="---" iterations="---" inner_iterations="---"
+    make all benchmark_name="---" iterations="---" inner_iterations="---" system_ruby=$SYSTEM_RUBY
 
 should do the trick. As this will trigger the submodule fetch and the building of truffleruby, I'd rather recommand to call
 
@@ -29,7 +29,7 @@ should do the trick. As this will trigger the submodule fetch and the building o
 
 first, and then later only run
 
-    make do_run do_analyse do_report benchmark_name="---" iterations="---" inner_iterations="---"
+    make do_run do_analyse do_report benchmark_name="---" iterations="---" inner_iterations="---" system_ruby=$SYSTEM_RUBY
 
 each time a new application needs to be analysed.
 

@@ -19,7 +19,7 @@ LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
 REPORT_FOLDER := $(LATEST_FOLDER)/report
 PLOTS_FOLDER := $(LATEST_FOLDER)/plots
-SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
+#SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
@@ -65,7 +65,7 @@ run_and_log:
 		mkdir -p $(COV_FOLDER)
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 
-		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations} 
+		export SYSTEM_RUBY=${system_ruby} ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations} 
 
 parse_coverage:
 		$(info [REPORT COVERAGE...])
