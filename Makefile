@@ -7,7 +7,7 @@ SRC_RESULTS := results
 
 JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
 #JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
-GRAAL_BRANCH := "dls/fetchID"
+GRAAL_BRANCH := "dls/test-fail"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
