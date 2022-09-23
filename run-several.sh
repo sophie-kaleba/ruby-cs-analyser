@@ -8,7 +8,7 @@ TRUBY=("Acid"
 	  "OptCarrot"
 	  "MatrixMultiply"
 	  "Pidigits"
-	  #"RedBlack" slighlty too big for report
+ 	  "RedBlack" #slighlty too big for report
 	  "SinatraHello"
 )
 
@@ -94,68 +94,80 @@ PSD=("PsdColorCmykToRgb"
 	 "PsdUtilPad4"
 )
 
+MEGA=("BlogRailsRoutesTwoRoutesTwoRequests"
+	  "ERubiRails"
+	  "HexaPdfSmall" #-> Should be analyzed on the big boy
+	  "LiquidCartParse" 
+	  "LiquidCartRender" 
+	  "LiquidMiddleware"
+	  "LiquidParseAll"
+	  "LiquidRenderBibs"
+	  "MailBench"
+	  "SinatraHello"
+)
+
 
 PROJECT_FOLDER=$(pwd)
 SRC_RESULTS=results
 #FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/$(date "+%d-%m-%y_%H-%M-%S")/
-FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42/
-#mkdir $FOLDER
+FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/12-09-22_22-30-49
+mkdir -p $FOLDER
 
 # for b in ${TRUBY[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 # for b in ${AWFY[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 # for b in ${YJIT[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir -p $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 # for b in ${RAILS[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir -p $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 # for b in ${CHUNKY[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir -p $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 # for b in ${PSD[@]}; do
 #     BENCH_FOLDER=$FOLDER/$b
 #     mkdir -p $BENCH_FOLDER
-# 	make do_run do_analyse report clean benchmark_name=$b iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+# 	make run_for_coverage benchmark_name=$b iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 # 	wait $!
 # done
 
 #must have more memory
 # FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42/
-# BENCH_FOLDER=$FOLDER/Havlak
-# mkdir -p $BENCH_FOLDER
-# make do_run do_analyse report clean benchmark_name="Havlak" iterations="1" inner_iterations="1" bench_folder=$BENCH_FOLDER
+BENCH_FOLDER=$FOLDER/Havlak
+mkdir -p $BENCH_FOLDER
+make run_for_coverage benchmark_name="Havlak" iterations="3" inner_iterations="1" bench_folder=$BENCH_FOLDER
 
 # is special regarding the number of inner iterations
-# FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42/
-# BENCH_FOLDER=$FOLDER/CD
-# mkdir -p $BENCH_FOLDER
-# make do_run do_analyse report clean benchmark_name="CD" iterations="1" inner_iterations="250" bench_folder=$BENCH_FOLDER
-
-FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42
-BENCH_FOLDER=$FOLDER/RecursiveSplitting
+#FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42/
+BENCH_FOLDER=$FOLDER/CD
 mkdir -p $BENCH_FOLDER
-make run_and_log parse_trace do_analyse report clean benchmark_name="RecursiveSplitting" bench_folder=$BENCH_FOLDER
+make run_for_coverage benchmark_name="CD" iterations="1" inner_iterations="250" bench_folder=$BENCH_FOLDER
+
+# FOLDER=$PROJECT_FOLDER/$SRC_RESULTS/11-08-22_18-49-42
+# BENCH_FOLDER=$FOLDER/RecursiveSplitting
+# mkdir -p $BENCH_FOLDER
+# make run_and_log parse_trace do_analyse report clean benchmark_name="RecursiveSplitting" bench_folder=$BENCH_FOLDER

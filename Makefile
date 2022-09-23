@@ -5,21 +5,23 @@ SRC_GRAAL := graal
 SRC_ANALYZER := behaviour-analysis
 SRC_RESULTS := results
 
-JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
-#JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
+#JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
+JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
 GRAAL_BRANCH := "dls/test-fail"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
-EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=lcov --coverage.OutputFile=./coverage/${benchmark_name}.info
+EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=histogram --coverage.OutputFile=./coverage/${benchmark_name}.info --vm.Xss6m
+#EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false
 
-CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name}
-COV_FOLDER := $(CURRENT_FOLDER)/Coverage
+#CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name} disabled when running several benchmarks, handled in run-several.sh
+CURRENT_FOLDER := ${bench_folder}
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
+COV_FOLDER := $(LATEST_FOLDER)/Coverage
 REPORT_FOLDER := $(LATEST_FOLDER)/report
 PLOTS_FOLDER := $(LATEST_FOLDER)/plots
-#SYSTEM_RUBY := /home/sopi/.rbenv/versions/3.0.0/bin/ruby
+SYSTEM_RUBY := "/home/sopi/.rbenv/versions/3.0.0/bin/ruby"
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
@@ -55,17 +57,32 @@ build_tr:
 		cd $(PROJECT_FOLDER)/$(SRC_TR) ; ${JT} build --sforceimports --env jvm-ce
 
 		cd $(PROJECT_FOLDER)/$(SRC_ANALYZER)/splitting-transition/src ; javac *.java
+
+run_for_coverage:
+		$(info [RUNNING ${benchmark_name} ...])
+
+		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
+		
+#		mkdir -p $(CURRENT_FOLDER) disabled when running several benchmarks, handled in run-several.sh
+		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
+		mkdir -p $(COV_FOLDER)
+
+		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="/dev/null"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
+
+		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_simple_cov.py $(COV_FOLDER)/${benchmark_name}.info $(COV_FOLDER)/${benchmark_name}.csv ${benchmark_name}
      
 run_and_log:
 		$(info [RUNNING ${benchmark_name} ...])
 
 		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
 		
-		mkdir -p $(CURRENT_FOLDER)
-		mkdir -p $(COV_FOLDER)
+#		mkdir -p $(CURRENT_FOLDER) disabled when running several benchmarks, handled in run-several.sh
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
+		mkdir -p $(COV_FOLDER)
 
-		export SYSTEM_RUBY=${system_ruby} ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations} 
+		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
+
+#		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) $(PWD)/${SRC_TR}/${benchmark_name}.rb
 
 parse_coverage:
 		$(info [REPORT COVERAGE...])
@@ -99,6 +116,7 @@ analyse_trace:
 
 #		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
+		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf ${benchmark_name}_splitting_data.csv.tar.lz4 ${benchmark_name}_splitting_data.csv
 		  
 report:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
@@ -132,6 +150,17 @@ plots:
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} $(PLOTS_FOLDER)/Blocks $(LATEST_FOLDER)/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
 
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
+
+plotsindiv:
+		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
+
+		mkdir -p ${source_folder}/plots
+		cd $(source_folder) ; tar -I lz4 -xf $(PARSED_INPUT).tar.lz4
+
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript generate_plots.Rnw ${benchmark_name} ${source_folder}/plots ${source_folder}/$(PARSED_INPUT) ${KEEP_STARTUP} $(METHODS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} ${source_folder}/plots/Blocks ${source_folder}/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
+
+		cd $(source_folder) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
 clean:
 		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
