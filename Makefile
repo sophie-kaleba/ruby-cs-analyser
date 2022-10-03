@@ -12,10 +12,9 @@ TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
 
 EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=histogram --coverage.OutputFile=./coverage/${benchmark_name}.info --vm.Xss6m
-#EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false
 
-#CURRENT_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/$(shell date "+%d-%m-%y_%H-%M-%S")/${benchmark_name} disabled when running several benchmarks, handled in run-several.sh
-CURRENT_FOLDER := ${bench_folder}
+RUN_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/${run_folder}
+CURRENT_FOLDER := ${RUN_FOLDER}/${benchmark_name}
 LATEST_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/latest
 LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
 COV_FOLDER := $(LATEST_FOLDER)/Coverage
@@ -31,11 +30,11 @@ BLOCKS := "TRUE"
 KEEP_STARTUP := "TRUE"
 NO_STARTUP := "FALSE"
 
-do_run: run_and_log parse_coverage parse_trace 
+do_run: run_and_trace parse_coverage parse_trace 
 do_analyse: analyse_trace 
 do_report: report plots clean
 init: fetch_deps build_tr
-all: fetch_deps build_tr run_and_log parse_coverage parse_trace analyse_trace report plots clean
+all: fetch_deps build_tr run_and_trace parse_coverage parse_trace analyse_trace report plots clean
 
 fetch_deps:
 		$(info [FETCHING graal anx mx...])
@@ -57,44 +56,24 @@ build_tr:
 		cd $(PROJECT_FOLDER)/$(SRC_TR) ; ${JT} build --sforceimports --env jvm-ce
 
 		cd $(PROJECT_FOLDER)/$(SRC_ANALYZER)/splitting-transition/src ; javac *.java
-
-run_for_coverage:
-		$(info [RUNNING ${benchmark_name} ...])
-
-		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
-		
-#		mkdir -p $(CURRENT_FOLDER) disabled when running several benchmarks, handled in run-several.sh
-		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
-		mkdir -p $(COV_FOLDER)
-
-		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="/dev/null"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
-
-		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_simple_cov.py $(COV_FOLDER)/${benchmark_name}.info $(COV_FOLDER)/${benchmark_name}.csv ${benchmark_name}
      
-run_and_log:
+run_and_trace:
 		$(info [RUNNING ${benchmark_name} ...])
 
 		(cd $(PROJECT_FOLDER)/${SRC_TR} ; git fetch --all || true ; git checkout $(TR_BRANCH))
 		
-#		mkdir -p $(CURRENT_FOLDER) disabled when running several benchmarks, handled in run-several.sh
+		mkdir -p $(CURRENT_FOLDER)
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 		mkdir -p $(COV_FOLDER)
 
 		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
 
-#		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) $(PWD)/${SRC_TR}/${benchmark_name}.rb
-
 parse_coverage:
 		$(info [REPORT COVERAGE...])
 
-		lcov --summary $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
-		lcov --list $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
-
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH) ; git pull
 
-		mkdir -p $(COV_FOLDER)/Global
-		mkdir -p $(COV_FOLDER)/Detailed
-		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_cov_file.py $(COV_FOLDER)/${benchmark_name}_cov.txt $(COV_FOLDER)/Global/${benchmark_name}_global.csv $(COV_FOLDER)/Detailed/${benchmark_name}_detailed.csv
+		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_simple_cov.py $(COV_FOLDER)/${benchmark_name}.info $(COV_FOLDER)/${benchmark_name}_global.csv ${benchmark_name}
 
 parse_trace:
 		$(info [PARSING execution trace ...])
@@ -122,23 +101,28 @@ report:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
 
 		mkdir -p $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw withstartup_method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/General $(LATEST_FOLDER)/Methods/Details $(REPORT_FOLDER) ${KEEP_STARTUP} $(METHODS)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R generate_report.Rnw method_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Methods/NoStartup/General $(LATEST_FOLDER)/Methods/NoStartup/Details $(REPORT_FOLDER) ${NO_STARTUP} $(METHODS)
 
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw withstartup_block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/General $(LATEST_FOLDER)/Blocks/Details $(REPORT_FOLDER)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit.R BLOCK_generate_report.Rnw block_tables.tex $(LATEST_COV_FOLDER)/Global $(LATEST_FOLDER)/Blocks/NoStartup/General $(LATEST_FOLDER)/Blocks/NoStartup/Details $(REPORT_FOLDER)  
-#		arg1: csv files location arg2: report location
-#		will generate the report in place, it will need to be moved in the relevant folder, and also generates the tex tables
+#		will generate tex tables and tax nacros in the one_bench_tables tex file
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit-merge.R merge_tables.Rnw one_bench_tables.tex $(LATEST_FOLDER) Methods Blocks
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; python3 process_table_header.py one_bench_tables.tex parsed_one_bench_tables.tex ; rm one_bench_tables.tex
 
-		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/method_tables.tex $(REPORT_FOLDER)/method_tables.tex
-		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_method_tables.tex $(REPORT_FOLDER)/withstartup_method_tables.tex
-		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/block_tables.tex $(REPORT_FOLDER)/block_tables.tex
-		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/withstartup_block_tables.tex $(REPORT_FOLDER)/withstartup_block_tables.tex
-
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/parsed_one_bench_tables.tex $(REPORT_FOLDER)/parsed_one_bench_tables.tex
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(REPORT_FOLDER)/acmart.cls 
-		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper_template_one.tex $(REPORT_FOLDER)/${benchmark_name}_report.tex
 
 		cd $(REPORT_FOLDER) ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex ; bibtex *.aux ; bibtex *.aux ; pdflatex $(REPORT_FOLDER)/${benchmark_name}_report.tex
+
+grouped_report:
+		$(info [GENERATING analysis reports at $(RUN_FOLDER)...])
+
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript knit-merge.R merge_tables.Rnw all_benchs_table.tex $(RUN_FOLDER) Methods Blocks
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; python3 process_table_header.py all_benchs_table.tex parsed_all_benchs_tables.tex ; rm all_benchs_table.tex
+
+		mv $(PROJECT_FOLDER)/${SRC_ANALYZER}/parsed_all_benchs_tables.tex $(RUN_FOLDER)/parsed_all_benchs_tables.tex
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/acmart.cls $(RUN_FOLDER)/acmart.cls 
+		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper_template_all.tex $(RUN_FOLDER)/all_benchs_report.tex
+
+		cd $(RUN_FOLDER) ; pdflatex $(RUN_FOLDER)/all_benchs_report.tex ; bibtex *.aux ; bibtex *.aux ; pdflatex $(RUN_FOLDER)/all_benchs_report.tex
 
 plots:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
@@ -151,17 +135,8 @@ plots:
 
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
-plotsindiv:
-		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
-
-		mkdir -p ${source_folder}/plots
-		cd $(source_folder) ; tar -I lz4 -xf $(PARSED_INPUT).tar.lz4
-
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript generate_plots.Rnw ${benchmark_name} ${source_folder}/plots ${source_folder}/$(PARSED_INPUT) ${KEEP_STARTUP} $(METHODS)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_generate_plots.Rnw ${benchmark_name} ${source_folder}/plots/Blocks ${source_folder}/$(PARSED_INPUT) ${KEEP_STARTUP} $(BLOCKS)
-
-		cd $(source_folder) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
 
 clean:
 		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
+		cd $(RUN_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
 
