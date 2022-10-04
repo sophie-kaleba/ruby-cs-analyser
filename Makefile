@@ -123,6 +123,7 @@ grouped_report:
 		cp $(PROJECT_FOLDER)/${SRC_ANALYZER}/paper_template_all.tex $(RUN_FOLDER)/all_benchs_report.tex
 
 		cd $(RUN_FOLDER) ; pdflatex $(RUN_FOLDER)/all_benchs_report.tex ; bibtex *.aux ; bibtex *.aux ; pdflatex $(RUN_FOLDER)/all_benchs_report.tex
+		cd $(RUN_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
 
 plots:
 		$(info [GENERATING analysis reports at $(REPORT_FOLDER)...])
@@ -138,5 +139,5 @@ plots:
 
 clean:
 		cd $(REPORT_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
-		cd $(RUN_FOLDER) ; rm *.aux *.out *.log *.bbl *.blg
+		
 
