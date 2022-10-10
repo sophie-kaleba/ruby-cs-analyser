@@ -90,8 +90,8 @@ analyse_trace:
 
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(METHODS)
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(METHODS)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(BLOCKS)
-		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript BLOCK_analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${KEEP_STARTUP} $(BLOCKS)
+		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; Rscript analyse_and_generate_csv.Rnw ${benchmark_name} $(LATEST_FOLDER)/$(PARSED_INPUT) $(LATEST_FOLDER) ${NO_STARTUP} $(BLOCKS)
 
 #		arg1: benchmark name arg2: output folder for generated files arg3:trace file to analyse
 		cd $(LATEST_FOLDER) ; tar --remove-files -I lz4 -cf $(PARSED_INPUT).tar.lz4 $(PARSED_INPUT)
