@@ -5,8 +5,7 @@ SRC_GRAAL := graal
 SRC_ANALYZER := behaviour-analysis
 SRC_RESULTS := results
 
-#JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
-JT := $(PROJECT_FOLDER)/$(SRC_TR)/tool/jt.rb
+JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
 GRAAL_BRANCH := "dls/test-fail"
 TR_BRANCH := "update-truby"
 ANALYZER_BRANCH := "switch-to-data-table"
@@ -20,7 +19,6 @@ LATEST_COV_FOLDER := $(LATEST_FOLDER)/Coverage
 COV_FOLDER := $(LATEST_FOLDER)/Coverage
 REPORT_FOLDER := $(LATEST_FOLDER)/report
 PLOTS_FOLDER := $(LATEST_FOLDER)/plots
-SYSTEM_RUBY := "/home/sopi/.rbenv/versions/3.0.0/bin/ruby"
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
@@ -66,7 +64,7 @@ run_and_trace:
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 		mkdir -p $(COV_FOLDER)
 
-		export SYSTEM_RUBY=$(SYSTEM_RUBY) ; $(SYSTEM_RUBY) $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
+		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
 
 parse_coverage:
 		$(info [REPORT COVERAGE...])
