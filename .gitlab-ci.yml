@@ -1,0 +1,15 @@
+stages:
+  - build-and-analyse
+
+variables:
+  JT: bin/jt
+  GIT_SUBMODULE_STRATEGY: normal
+  WORKING_BRANCH: clean-repo
+
+analysis_job:
+  stage: build-and-analyse
+  tags: [yuria2]
+  allow_failure: true
+  script:
+    - git checkout ${WORKING_BRANCH}
+    - ./run_several.sh

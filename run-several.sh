@@ -106,48 +106,58 @@ MEGA=("BlogRailsRoutesTwoRoutesTwoRequests"
 	  "SinatraHello"
 )
 
+TEST=("DeltaBlue"
+	  "NBody"
+	  "Bounce" #Bigger benchmark, may need to be run on a more powerful machine
+)
+
 PROJECT_FOLDER=$(pwd)
 SRC_RESULTS=results
 FOLDER=$(date "+%d-%m-%y_%H-%M-%S")
 
 make init
 
-for b in ${TRUBY[@]}; do
+# for b in ${TRUBY[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+# for b in ${AWFY[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+# for b in ${YJIT[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+# for b in ${RAILS[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+# for b in ${CHUNKY[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+# for b in ${PSD[@]}; do
+# 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
+# 	wait $!
+# done
+
+for b in ${TEST[@]}; do
 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
 	wait $!
 done
 
-for b in ${AWFY[@]}; do
-	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
-	wait $!
-done
+# #must have more memory
+# #TODO - add the special flag for memory!
+# make do_run do_analyse benchmark_name="Havlak" iterations="1" inner_iterations="1" run_folder=$FOLDER
 
-for b in ${YJIT[@]}; do
-	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
-	wait $!
-done
-
-for b in ${RAILS[@]}; do
-	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
-	wait $!
-done
-
-for b in ${CHUNKY[@]}; do
-	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
-	wait $!
-done
-
-for b in ${PSD[@]}; do
-	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER
-	wait $!
-done
-
-#must have more memory
-#TODO - add the special flag for memory!
-make do_run do_analyse benchmark_name="Havlak" iterations="1" inner_iterations="1" run_folder=$FOLDER
-
-# is special regarding the number of inner iterations
-make do_run do_analyse benchmark_name="CD" iterations="1" inner_iterations="250" run_folder=$FOLDER
+# # is special regarding the number of inner iterations
+# make do_run do_analyse benchmark_name="CD" iterations="1" inner_iterations="250" run_folder=$FOLDER
 
 # all the benchmarks have been analysed, generate the summary report
 make grouped_report run_folder=$FOLDER
