@@ -19,4 +19,5 @@ analysis_job:
     - *PREP_PATH
 
     - cd ${PROJECT_FOLDER}
+    - echo ${PROJECT_FOLDER}
     - bash run_several.sh
