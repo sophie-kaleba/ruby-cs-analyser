@@ -6,10 +6,17 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   WORKING_BRANCH: clean-repo
 
+.scripts:
+   prep-path: &PREP_PATH |
+     export PROJECT_FOLDER=$(pwd)
+     export PATH=${PROJECT_FOLDER}/bin:${PATH}
+
 analysis_job:
   stage: build-and-analyse
   tags: [yuria2]
   allow_failure: true
   script:
-    - git checkout ${WORKING_BRANCH}
-    - ./run_several.sh
+    - *PREP_PATH
+
+    - cd ${PROJECT_FOLDER}
+    - bash run_several.sh
