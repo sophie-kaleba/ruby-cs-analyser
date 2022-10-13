@@ -23,17 +23,14 @@ variables:
     export PROJECT_FOLDER=$(pwd)
     cd ${PROJECT_FOLDER}/${SRC_GRAAL}
     git -C ${PROJECT_FOLDER}/${SRC_GRAAL} fetch --all || true
-    git -C ${PROJECT_FOLDER}/${SRC_GRAAL} pull || true
 
     git -C ${PROJECT_FOLDER}/${SRC_MX} fetch || true
 
     cd ${PROJECT_FOLDER}/${SRC_TR}
     git -C ${PROJECT_FOLDER}/${SRC_TR} fetch --all || true
-    git -C ${PROJECT_FOLDER}/${SRC_TR} pull || true
 
     cd ${PROJECT_FOLDER}/${SRC_ANALYZER}
     git -C ${PROJECT_FOLDER}/${SRC_ANALYZER} fetch --all || true
-    git -C ${PROJECT_FOLDER}/${SRC_ANALYZER} pull || true
     cd ..
 
 
@@ -42,6 +39,8 @@ variables:
     export GIT_DIR=${PROJECT_FOLDER}/${SRC_TR}/.git
 
     cd ${PROJECT_FOLDER}/${SRC_TR}
+    git fetch --all || true
+    git checkout ${TR_BRANCH}
     ${JT} build --sforceimports --env jvm-ce
     cd ${PROJECT_FOLDER}/${SRC_TR}
     ${JT} --use jvm-ce ruby -S gem install bindata
