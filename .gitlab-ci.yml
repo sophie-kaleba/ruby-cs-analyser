@@ -18,6 +18,4 @@ analysis_job:
   script:
     - *PREP_PATH
 
-    - cd ${PROJECT_FOLDER}
-    - echo ${PROJECT_FOLDER}
-    - bash run_several.sh
+    - bash run-several.sh
