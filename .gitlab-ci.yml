@@ -25,11 +25,13 @@ variables:
     git -C ${PROJECT_FOLDER}/${SRC_GRAAL} fetch --all || true
 
     git -C ${PROJECT_FOLDER}/${SRC_MX} fetch || true
+
     cd ${PROJECT_FOLDER}/${SRC_TR}
     git -C ${PROJECT_FOLDER}/${SRC_TR} fetch --all || true
 
     cd ${PROJECT_FOLDER}/${SRC_ANALYZER}
     git -C ${PROJECT_FOLDER}/${SRC_ANALYZER} fetch --all || true
+    cd ..
 
 
   build_tr: &BUILD_TR |
@@ -42,6 +44,7 @@ variables:
     ${JT} --use jvm-ce ruby -S gem install bindata
 
     cd ${PROJECT_FOLDER}/${SRC_ANALYZER}/splitting-transition/src ; javac *.java
+    cd ${PROJECT_FOLDER}
 
 analysis_job:
   stage: build-and-analyse
