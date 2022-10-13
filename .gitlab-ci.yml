@@ -36,6 +36,7 @@ variables:
 
   build_tr: &BUILD_TR |
     export PROJECT_FOLDER=$(pwd)
+    echo ${PROJECT FOLDER}
     export GIT_DIR=${PROJECT_FOLDER}/${SRC_TR}/.git
 
     cd ${PROJECT_FOLDER}/${SRC_TR}
