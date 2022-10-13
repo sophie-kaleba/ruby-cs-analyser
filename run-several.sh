@@ -115,7 +115,7 @@ PROJECT_FOLDER=$(pwd)
 SRC_RESULTS=results
 FOLDER=$(date "+%d-%m-%y_%H-%M-%S")
 
-make init
+#make init
 
 # for b in ${TRUBY[@]}; do
 # 	make do_run do_analyse benchmark_name=$b iterations="1" inner_iterations="1" run_folder=$FOLDER

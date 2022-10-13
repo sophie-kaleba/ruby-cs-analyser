@@ -5,11 +5,32 @@ variables:
   JT: bin/jt
   GIT_SUBMODULE_STRATEGY: normal
   WORKING_BRANCH: clean-repo
+  GRAAL_BRANCH: dls/test-fail
+  TR_BRANCH: update-truby
+  ANALYZER_BRANCH: switch-to-data-table
+  SRC_GRAAL: graal
+  SRC_TR: truffleruby
+  SRC_MX: mx
+  SRC_ANALYZER: behaviour-analysis
+
 
 .scripts:
    prep-path: &PREP_PATH |
      export PROJECT_FOLDER=$(pwd)
      export PATH=${PROJECT_FOLDER}/bin:${PATH}
+
+  fetch_deps: &FETCH_DEPS |
+		cd ${PROJECT_FOLDER}/${SRC_GRAAL} ; git -C ${PROJECT_FOLDE})/${SRC_GRAAL} fetch --all || true ; git checkout ${GRAAL_BRANCH}
+		git -C ${PROJECT_FOLDER}/${SRC_MX} fetch || true
+		cd ${PROJECT_FOLDER}/${SRC_TR} ; git -C ${PROJECT_FOLDER}/${SRC_TR} fetch --all || true ; git checkout ${TR_BRANCH}
+		cd ${PROJECT_FOLDER}/${SRC_ANALYZER} ; git -C ${PROJECT_FOLDER}/${SRC_ANALYZER} fetch --all || true ; git checkout ${ANALYZER_BRANCH}
+
+  build_tr: &BUILD_TR |
+    export GIT_DIR=${PROJECT_FOLDER}/${SRC_TR}/.git ; git checkout ${TR_BRANCH}
+    cd ${PROJECT_FOLDER}/${SRC_TR} ; ${JT} build --sforceimports --env jvm-ce
+    cd ${PROJECT_FOLDER}/${SRC_TR} ; ${JT} --use jvm-ce ruby -S gem install bindata
+
+    cd ${PROJECT_FOLDER}/${SRC_ANALYZER}/splitting-transition/src ; javac *.java
 
 analysis_job:
   stage: build-and-analyse
@@ -17,5 +38,7 @@ analysis_job:
   allow_failure: true
   script:
     - *PREP_PATH
+    - *FETCH_DEPS
+    - *BUILD_TR
 
     - bash run-several.sh
