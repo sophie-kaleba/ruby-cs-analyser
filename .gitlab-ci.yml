@@ -38,15 +38,15 @@ variables:
     echo $(pwd)
     export GIT_DIR=${PROJECT_FOLDER}/${SRC_TR}/.git
 
-    cd ${PROJECT_FOLDER}/${SRC_TR}
+    cd ./${SRC_TR}
     git fetch --all || true
     git checkout ${TR_BRANCH}
     ${JT} build --sforceimports --env jvm-ce
-    cd ${PROJECT_FOLDER}/${SRC_TR}
+    cd ../${SRC_TR}
     ${JT} --use jvm-ce ruby -S gem install bindata
 
-    cd ${PROJECT_FOLDER}/${SRC_ANALYZER}/splitting-transition/src ; javac *.java
-    cd ${PROJECT_FOLDER}
+    cd ../${SRC_ANALYZER}/splitting-transition/src ; javac *.java
+    cd ..
 
 analysis_job:
   stage: build-and-analyse
