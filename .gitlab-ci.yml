@@ -40,7 +40,7 @@ variables:
 
     cd ./${SRC_TR}
     git fetch --all || true
-    git checkout ${TR_BRANCH}
+
     ${JT} build --sforceimports --env jvm-ce
     cd ../${SRC_TR}
     ${JT} --use jvm-ce ruby -S gem install bindata
