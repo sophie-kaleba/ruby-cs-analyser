@@ -65,7 +65,7 @@ run_and_trace:
 		ln -vfns $(CURRENT_FOLDER) $(LATEST_FOLDER)
 		mkdir -p $(COV_FOLDER)
 
-		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info $(PROJECT_FOLDER)/$(SRC_TR)/bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
+		cd $(PROJECT_FOLDER)/$(SRC_TR) ; $(JT) --use jvm-ce ruby --vm.Dpolyglot.log.file="$(CURRENT_FOLDER)/raw_${benchmark_name}.log"  $(EXE_FLAGS) $(PROJECT_FOLDER)/$(SRC_TR)/phd-bench/phase/harness-behaviour-aux.rb ${benchmark_name} ${iterations} ${inner_iterations}
 
 parse_coverage:
 		$(info [REPORT COVERAGE...])
