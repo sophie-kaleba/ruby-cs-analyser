@@ -9,8 +9,7 @@ JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
 GRAAL_BRANCH := "behaviour/handle-mispredicts"
 TR_BRANCH := "behaviour/handle-mispredicts"
 ANALYZER_BRANCH := "switch-to-data-table"
-
-EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=histogram --coverage.OutputFile=./coverage/${benchmark_name}.info --vm.Xss6m
+MX_BRANCH := "3cffbfcf2cd9d189361ad7fd2eda01467b15c3f5"
 
 RUN_FOLDER := $(PROJECT_FOLDER)/$(SRC_RESULTS)/${run_folder}
 CURRENT_FOLDER := ${RUN_FOLDER}/${benchmark_name}
@@ -39,10 +38,10 @@ fetch_deps:
 		git submodule update --init
 
 		cd $(PROJECT_FOLDER)/${SRC_GRAAL} ; git -C $(PROJECT_FOLDER)/$(SRC_GRAAL) fetch --all || true ; git checkout $(GRAAL_BRANCH)
-		git -C $(PROJECT_FOLDER)/$(SRC_MX) fetch || true
+		git -C $(PROJECT_FOLDER)/$(SRC_MX) fetch --all || true ; git checkout $(MX_BRANCH)
 
 		$(info [FETCHING truffleruby ...])
-		cd $(PROJECT_FOLDER)/${SRC_TR} ; git -C $(PROJECT_FOLDER)/$(SRC_TR) fetch --all || true ; git checkout $(TR_BRANCH)
+		cd $(PROJECT_FOLDER)/${SRC_TR} ; git -C $(PROJECT_FOLDER)/$(SRC_TR) fetch --all || true ; git checkout $(TR_BRANCH) ; git submodule update --init
 
 		$(info [FETCHING Ruby analyser ...])
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git -C $(PROJECT_FOLDER)/$(SRC_ANALYZER) fetch --all || true ; git checkout $(ANALYZER_BRANCH)
