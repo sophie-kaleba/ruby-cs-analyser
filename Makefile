@@ -6,8 +6,8 @@ SRC_ANALYZER := behaviour-analysis
 SRC_RESULTS := results
 
 JT = $(PROJECT_FOLDER)/$(SRC_TR)/bin/jt
-GRAAL_BRANCH := "dls/test-fail"
-TR_BRANCH := "update-truby"
+GRAAL_BRANCH := "behaviour/handle-mispredicts"
+TR_BRANCH := "behaviour/handle-mispredicts"
 ANALYZER_BRANCH := "switch-to-data-table"
 
 EXE_FLAGS := --monitor-calls=true --monitor-startup=true --splitting --yield-always-clone=false --coverage --coverage.Output=histogram --coverage.OutputFile=./coverage/${benchmark_name}.info --vm.Xss6m
