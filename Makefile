@@ -21,6 +21,8 @@ PLOTS_FOLDER := $(LATEST_FOLDER)/plots
 RAW_INPUT := raw_${benchmark_name}.log
 PARSED_INPUT := parsed_${benchmark_name}.log
 
+EXE_FLAGS := --monitor-calls=true --monitor-startup=true --experimental-options --vm.Dpolyglot.engine.DynamicCompilationThresholds=false --vm.XX:-UseJVMCINativeLibrary --engine.BackgroundCompilation=false --coverage --coverage.Output=lcov --coverage.OutputFile=$(COV_FOLDER)/${benchmark_name}.info --vm.Xss6m
+
 METHODS := "FALSE"
 BLOCKS := "TRUE"
 
@@ -69,9 +71,16 @@ run_and_trace:
 parse_coverage:
 		$(info [REPORT COVERAGE...])
 
+		lcov --summary $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
+		lcov --list $(COV_FOLDER)/${benchmark_name}.info >> $(COV_FOLDER)/${benchmark_name}_cov.txt 2>&1
+
+		mkdir -p $(COV_FOLDER)/Global
+		mkdir -p $(COV_FOLDER)/Detailed
+
 		cd $(PROJECT_FOLDER)/${SRC_ANALYZER} ; git fetch --all || true ; git checkout $(ANALYZER_BRANCH) ; git pull
 
-		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parse_simple_cov.py $(COV_FOLDER)/${benchmark_name}.info $(COV_FOLDER)/${benchmark_name}_global.csv ${benchmark_name}
+		python3 $(PROJECT_FOLDER)/$(SRC_ANALYZER)/parsing_sophie.py $(COV_FOLDER)/${benchmark_name}_cov.txt $(COV_FOLDER)/Global/${benchmark_name}_global.csv $(COV_FOLDER)/Detailed/${benchmark_name}_detailed.csv
+
 
 parse_trace:
 		$(info [PARSING execution trace ...])
